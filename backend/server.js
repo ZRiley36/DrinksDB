@@ -63,13 +63,24 @@ app.use((req, res, next) => {
 // Get all drinks (simple list)
 app.get('/api/drinks', async (req, res) => {
   try {
+    console.log('📋 Fetching all drinks from database...');
     const result = await db.query(
       'SELECT drink_id, name, glass_type, build_method, garnish FROM drinks ORDER BY name'
     );
+    console.log(`✅ Found ${result.rows.length} drinks`);
     res.json(result.rows);
   } catch (err) {
-    console.error('Error fetching drinks:', err);
-    res.status(500).json({ error: 'Failed to fetch drinks' });
+    console.error('❌ Error fetching drinks:', err);
+    console.error('Error details:', {
+      message: err.message,
+      code: err.code,
+      stack: err.stack
+    });
+    res.status(500).json({ 
+      error: 'Failed to fetch drinks',
+      details: err.message,
+      code: err.code
+    });
   }
 });
 
