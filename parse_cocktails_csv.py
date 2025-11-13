@@ -109,19 +109,10 @@ def parse_ingredient(ingredient_str: str) -> Optional[Tuple[str, str, str]]:
     ingredient_str = re.sub(r'\s*\(optional\)\s*$', '', ingredient_str, flags=re.IGNORECASE)
     ingredient_str = ingredient_str.strip()
     
-    # Check for concatenated ingredients (like "Allspice Saint Elizabeth15 ml Fresh Lime Juice")
-    # Look for pattern: word + number + unit + ingredient
-    concat_match = re.match(r'^(.+?)(\d+(?:\.\d+)?)\s*(ml|oz|cl)\s+(.+)$', ingredient_str)
-    if concat_match:
-        # This might be two ingredients - take the second one
-        amount, unit, name = concat_match.groups()[1:]
-        name = re.split(r'[;,]', name)[0].strip()
-        name = normalize_ingredient_name(name)
-        return (name, amount.strip(), unit.strip().lower())
-    
     # Pattern to match: amount (number or fraction) + unit + ingredient name
+    # Check standard pattern FIRST before checking for concatenated ingredients
     patterns = [
-        # Standard: "30 ml White Rum" or "30ml White Rum"
+        # Standard: "30 ml White Rum" or "30ml White Rum" - CHECK THIS FIRST!
         r'^(\d+(?:\.\d+)?)\s*(ml|oz|cl)\s+(.+)$',
         # Fraction with unit: "1/2 Bar Spoon Maraschino" or "1/2 Lemon Wheel"
         r'^(\d+/\d+)\s+(bar\s+spoon|bar\s+spoons?|lemon\s+wheel|orange\s+wheel|wheel)\s+(.+)$',
@@ -181,6 +172,17 @@ def parse_ingredient(ingredient_str: str) -> Optional[Tuple[str, str, str]]:
                         return (name, 'top', 'up')
                     else:
                         return (name, 'splash', 'splash')
+    
+    # If no standard pattern matched, check for concatenated ingredients
+    # (like "Allspice Saint Elizabeth15 ml Fresh Lime Juice")
+    # This should only match if there's actual text before the number
+    concat_match = re.match(r'^([A-Za-z][A-Za-z\s]+)(\d+(?:\.\d+)?)\s*(ml|oz|cl)\s+(.+)$', ingredient_str)
+    if concat_match:
+        # This might be two ingredients - take the second one
+        amount, unit, name = concat_match.groups()[1:]
+        name = re.split(r'[;,]', name)[0].strip()
+        name = normalize_ingredient_name(name)
+        return (name, amount.strip(), unit.strip().lower())
     
     # If no pattern matches, try to extract just the name (might be a whole item)
     # Check if it starts with a number
@@ -384,6 +386,8 @@ def main():
         if ingredients_str:
             ingredient_parts = [p.strip() for p in ingredients_str.split(';')]
             for ingredient_part in ingredient_parts:
+                if not ingredient_part:  # Skip empty parts
+                    continue
                 parsed = parse_ingredient(ingredient_part)
                 if parsed:
                     ingredient_name, amount, unit = parsed
