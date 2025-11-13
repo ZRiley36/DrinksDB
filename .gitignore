@@ -1,34 +1,29 @@
-# Database files
-*.db
-*.sqlite
-*.sqlite3
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
 
 # Environment variables
 .env
-.env.local
+backend/.env
 
-# IDE files
+# Build outputs
+frontend/dist/
+frontend/build/
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
 # Logs
 *.log
+npm-debug.log*
 
-# Python virtual environment (if you add Python later)
-venv/
-env/
-__pycache__/
-*.pyc
-
-# Node modules (if you add Node.js later)
-node_modules/
-package-lock.json
-yarn.lock
-
+# Test files
+test_debug.sql
