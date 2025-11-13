@@ -14,16 +14,21 @@ function App() {
 
   // Fetch all drinks on mount
   useEffect(() => {
+    console.log('🚀 App mounted, fetching drinks...')
     fetchDrinks()
   }, [])
 
   const fetchDrinks = async () => {
     try {
       setLoading(true)
+      setError(null)
+      console.log('📋 Fetching all drinks...')
       const data = await api.get('/api/drinks')
+      console.log('✅ Received drinks:', data.length)
       setDrinks(data)
     } catch (err) {
-      setError(err.message)
+      console.error('❌ Failed to fetch drinks:', err)
+      setError(`Failed to load drinks: ${err.message}`)
     } finally {
       setLoading(false)
     }
@@ -57,10 +62,13 @@ function App() {
     try {
       setLoading(true)
       setActiveFilters({ method: null, glass: null })
+      console.log('🔍 Searching for:', searchQuery)
       const data = await api.get(`/api/drinks/search/${encodeURIComponent(searchQuery)}`)
+      console.log('✅ Search results:', data.length)
       setDrinks(data)
     } catch (err) {
-      setError(err.message)
+      console.error('❌ Search failed:', err)
+      setError(`Search failed: ${err.message}`)
     } finally {
       setLoading(false)
     }
@@ -77,12 +85,15 @@ function App() {
       if (newFilters.method) params.append('method', newFilters.method)
       if (newFilters.glass) params.append('glass', newFilters.glass)
       
-      const data = await api.get(`/api/drinks/filter?${params.toString()}`)
+      const filterUrl = `/api/drinks/filter?${params.toString()}`
+      console.log('🔽 Filtering drinks:', newFilters, filterUrl)
+      const data = await api.get(filterUrl)
+      console.log('✅ Filter results:', data.length)
       setDrinks(data)
       setActiveFilters(newFilters)
     } catch (err) {
-      console.error('Filter error:', err)
-      setError(err.message)
+      console.error('❌ Filter error:', err)
+      setError(`Filter failed: ${err.message}`)
     } finally {
       setLoading(false)
     }

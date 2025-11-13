@@ -17,11 +17,13 @@ function GameNightMenu() {
     try {
       setLoading(true)
       setError(null)
+      console.log('📋 Fetching game night menu...')
       const data = await api.get('/api/game-night-menu')
+      console.log('✅ Received menu items:', data.length)
       setMenuItems(data)
     } catch (err) {
-      console.error('Error fetching menu:', err)
-      setError(err.message)
+      console.error('❌ Error fetching menu:', err)
+      setError(`Failed to load menu: ${err.message}`)
     } finally {
       setLoading(false)
     }
@@ -29,14 +31,16 @@ function GameNightMenu() {
 
   const fetchDrinkDetails = async (drinkId, drinkName) => {
     try {
+      console.log('🍹 Fetching drink details for menu:', drinkName)
       const data = await api.get(`/api/drinks/${encodeURIComponent(drinkName)}`)
+      console.log('✅ Received drink details:', drinkName)
       // Store details using drink_id if available, otherwise use drink name as key
       const key = drinkId || drinkName.toLowerCase()
       setDrinkDetails(prev => ({ ...prev, [key]: data }))
       return data
     } catch (err) {
-      console.error('Error fetching drink details:', err)
-      console.log(`Drink "${drinkName}" not found in database`)
+      console.error('❌ Error fetching drink details:', err)
+      console.log(`Drink "${drinkName}" not found in database or network error`)
       return null
     }
   }

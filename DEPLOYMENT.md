@@ -35,6 +35,7 @@ Since you already have **Vercel** linked to GitHub, we'll use:
    - Copy the "Internal Database URL" (for backend)
    - Copy the "External Connection String" (for local setup)
 
+
 4. **Run Database Migrations**
    - You can use Render's PostgreSQL shell or connect locally:
    ```bash
@@ -53,20 +54,27 @@ Since you already have **Vercel** linked to GitHub, we'll use:
    - Settings:
      - **Name**: `drinksdb-backend`
      - **Environment**: `Node`
-     - **Build Command**: `cd backend && npm install`
-     - **Start Command**: `cd backend && npm start`
+     - **Root Directory**: `backend` ⚠️ **IMPORTANT: Set this to `backend`**
+     - **Build Command**: `npm install` (leave as default, or clear it)
+     - **Start Command**: `npm start` (leave as default, or clear it)
      - **Plan**: **Free**
    - Add Environment Variables:
      ```
      NODE_ENV=production
      PORT=3001
-     DB_USER=<from database connection>
-     DB_HOST=<from database connection>
+     DB_USER=<from INTERNAL database connection>
+     DB_HOST=<from INTERNAL database connection>
      DB_NAME=drinksDB
-     DB_PASSWORD=<from database connection>
+     DB_PASSWORD=<from INTERNAL database connection>
      DB_PORT=5432
      FRONTEND_URL=<your-vercel-url> (we'll add this after frontend deploys)
      ```
+   - ⚠️ **IMPORTANT**: Use the **"Internal Database URL"** from Render (not External!)
+     - Go to your database → "Connect" tab
+     - Copy the **"Internal Database URL"** 
+     - Parse it the same way, but use those values for DB_USER, DB_HOST, DB_PASSWORD
+     - The Internal URL is for services on Render to connect to each other
+     - The External URL is only for connecting from your local machine (like pgAdmin)
    - Click "Create Web Service"
    - ⚠️ **Copy the service URL** (e.g., `https://drinksdb-backend.onrender.com`)
 
@@ -121,13 +129,19 @@ VITE_API_URL=https://your-backend.onrender.com
 ```
 NODE_ENV=production
 PORT=3001
-DB_USER=postgres
-DB_HOST=<from-render-database>
+DB_USER=<from INTERNAL connection string>
+DB_HOST=<from INTERNAL connection string>
 DB_NAME=drinksDB
-DB_PASSWORD=<from-render-database>
+DB_PASSWORD=<from INTERNAL connection string>
 DB_PORT=5432
 FRONTEND_URL=https://your-app.vercel.app
 ```
+
+**⚠️ Important**: 
+- Use **"Internal Database URL"** from Render (for backend service)
+- Use **"External Connection String"** from Render (for pgAdmin/local tools)
+- The Internal URL is shorter and faster for services on Render
+- The External URL includes the full hostname for external connections
 
 ## Troubleshooting
 

@@ -1,0 +1,14 @@
+Internal DB URL:
+postgresql://drinksdb_81xl_user:g3ir6q0JJBWNkU1mDgTsOxGQtA5lG8qp@dpg-d4b4d47gi27c7394kvog-a/drinksdb_81xl
+
+External DB URL:
+postgresql://drinksdb_81xl_user:g3ir6q0JJBWNkU1mDgTsOxGQtA5lG8qp@dpg-d4b4d47gi27c7394kvog-a.virginia-postgres.render.com/drinksdb_81xl
+
+username:
+drinksdb_81xl_user
+
+password:
+g3ir6q0JJBWNkU1mDgTsOxGQtA5lG8qp
+
+PSQL command:
+PGPASSWORD=g3ir6q0JJBWNkU1mDgTsOxGQtA5lG8qp psql -h dpg-d4b4d47gi27c7394kvog-a.virginia-postgres.render.com -U drinksdb_81xl_user drinksdb_81xl
