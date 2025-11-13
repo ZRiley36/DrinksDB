@@ -8,10 +8,47 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 // CORS: Allow requests from frontend (local dev or deployed)
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || '*', // Allow all in dev, specific URL in production
-  credentials: true
+
+// Normalize URLs by removing trailing slashes
+const normalizeUrl = (url) => {
+  if (!url) return url;
+  return url.replace(/\/+$/, ''); // Remove trailing slashes
 };
+
+const allowedOrigins = [
+  normalizeUrl(process.env.FRONTEND_URL),
+  'http://localhost:3000',
+  'http://localhost:5173', // Vite default port
+].filter(Boolean); // Remove undefined values
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow all origins in development
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    // Normalize the incoming origin (remove trailing slash)
+    const normalizedOrigin = normalizeUrl(origin);
+    
+    // In production, check against allowed origins (also normalized)
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(normalizedOrigin)) {
+      console.log('✅ CORS allowed:', normalizedOrigin);
+      callback(null, true);
+    } else {
+      console.log('❌ CORS blocked origin:', normalizedOrigin);
+      console.log('Allowed origins:', allowedOrigins);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -220,5 +257,9 @@ app.use('/api/*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`CORS allowed origins:`, allowedOrigins.length > 0 ? allowedOrigins : 'All (development mode)');
+  console.log(`Frontend URL (raw): ${process.env.FRONTEND_URL || 'Not set'}`);
+  console.log(`Frontend URL (normalized): ${normalizeUrl(process.env.FRONTEND_URL) || 'Not set'}`);
 });
 
