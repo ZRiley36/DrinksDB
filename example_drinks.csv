@@ -1,0 +1,10 @@
+name,description,glass_type,build_method,garnish
+Old Fashioned,A whiskey classic with sugar, bitters, and orange peel,Rocks,Stirred,"Orange Peel, Cherry"
+Martini,The quintessential gin cocktail,Martini,Stirred,"Lemon Twist, Olive"
+Daiquiri,Simple rum sour with lime and sugar,Coupe,Shaken,Lime Wedge
+Sidecar,Cognac-based sour with triple sec and lemon,Coupe,Shaken,Orange Twist
+Whiskey Highball,Whiskey diluted with soda water or sparkling water,Highball,In Glass,Lemon Wedge
+Flip,Rich dessert cocktail with egg, cream, and spirits,Coupe,Shaken,Nutmeg
+Alexander,Sweet dessert cocktail with gin or cognac, crème de cacao, and cream,Martini,Shaken,Nutmeg
+Americano,Aperol or Campari with vermouth and soda,Rocks,In Glass,"Orange Slice, Lemon Twist"
+

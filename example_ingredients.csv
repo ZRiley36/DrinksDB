@@ -1,0 +1,24 @@
+name,category,subcategory,abv
+Whiskey,Spirit,Whiskey,40.00
+Gin,Spirit,Gin,40.00
+White Rum,Spirit,Rum,40.00
+Cognac,Spirit,Brandy,40.00
+Scotch,Spirit,Whiskey,40.00
+Brandy,Spirit,Brandy,40.00
+Vermouth,Aromatized Wine,Sweet Vermouth,16.00
+Dry Vermouth,Aromatized Wine,Dry Vermouth,17.00
+Campari,Liqueur,Amaro,24.00
+White Crème de Cacao,Liqueur,Crème de Cacao,25.00
+Chocolate Liqueur,Liqueur,Chocolate,20.00
+Triple Sec,Liqueur,Orange Liqueur,40.00
+Soda Water,Mixer,Carbonated Water,0.00
+Lemon Juice,Juice,Citrus,0.00
+Lime Juice,Juice,Citrus,0.00
+Orange Juice,Juice,Citrus,0.00
+Simple Syrup,Sweetener,Sugar Syrup,0.00
+Granulated Sugar,Sweetener,Sugar,0.00
+Angostura Bitters,Bitters,Aromatic,44.70
+Heavy Cream,Dairy,Cream,0.00
+Egg,Egg,Whole Egg,0.00
+Nutmeg,Spice,Ground,0.00
+

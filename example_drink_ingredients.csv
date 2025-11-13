@@ -1,0 +1,25 @@
+drink_name,ingredient_name,amount,unit
+Old Fashioned,Whiskey,2,oz
+Old Fashioned,Simple Syrup,0.25,oz
+Old Fashioned,Angostura Bitters,2,dash
+Martini,Gin,2.5,oz
+Martini,Dry Vermouth,0.5,oz
+Daiquiri,White Rum,2,oz
+Daiquiri,Lime Juice,1,oz
+Daiquiri,Simple Syrup,0.75,oz
+Sidecar,Cognac,2,oz
+Sidecar,Triple Sec,1,oz
+Sidecar,Lemon Juice,0.75,oz
+Whiskey Highball,Scotch,2,oz
+Whiskey Highball,Soda Water,4,oz
+Flip,Brandy,2,oz
+Flip,Simple Syrup,0.75,oz
+Flip,Egg,1,whole
+Flip,Heavy Cream,1,oz
+Alexander,Cognac,1,oz
+Alexander,White Crème de Cacao,1,oz
+Alexander,Heavy Cream,1,oz
+Americano,Campari,1.5,oz
+Americano,Vermouth,1.5,oz
+Americano,Soda Water,2,oz
+
