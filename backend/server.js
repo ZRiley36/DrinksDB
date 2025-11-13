@@ -7,7 +7,12 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+// CORS: Allow requests from frontend (local dev or deployed)
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || '*', // Allow all in dev, specific URL in production
+  credentials: true
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Debug middleware to log all requests
@@ -176,6 +181,29 @@ app.get('/api/drinks/:name', async (req, res) => {
   } catch (err) {
     console.error('Error fetching drink:', err);
     res.status(500).json({ error: 'Failed to fetch drink' });
+  }
+});
+
+// Get Game Night Menu
+app.get('/api/game-night-menu', async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT 
+         m.menu_id, 
+         m.drink_name, 
+         m.description, 
+         m.price, 
+         m.display_order,
+         d.drink_id
+       FROM game_night_menu m
+       LEFT JOIN drinks d ON LOWER(m.drink_name) = LOWER(d.name)
+       ORDER BY m.display_order ASC`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching game night menu:', err);
+    console.error('Error details:', err.message, err.stack);
+    res.status(500).json({ error: 'Failed to fetch game night menu', details: err.message });
   }
 });
 

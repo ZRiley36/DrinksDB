@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import GameNightMenu from './GameNightMenu'
+import { api } from './api'
 
 function App() {
+  const [showMenu, setShowMenu] = useState(false)
   const [drinks, setDrinks] = useState([])
   const [selectedDrink, setSelectedDrink] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -17,9 +20,7 @@ function App() {
   const fetchDrinks = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/drinks')
-      if (!response.ok) throw new Error('Failed to fetch drinks')
-      const data = await response.json()
+      const data = await api.get('/api/drinks')
       setDrinks(data)
     } catch (err) {
       setError(err.message)
@@ -34,17 +35,7 @@ function App() {
       setError(null)
       console.log('Fetching drink details for:', drinkName)
       const encodedName = encodeURIComponent(drinkName)
-      console.log('Encoded name:', encodedName)
-      const response = await fetch(`/api/drinks/${encodedName}`)
-      if (!response.ok) {
-        if (response.status === 404) {
-          const errorData = await response.json().catch(() => ({}))
-          console.error('Drink not found:', drinkName, 'Response:', errorData)
-          throw new Error(`Drink not found: ${drinkName}`)
-        }
-        throw new Error('Failed to fetch drink details')
-      }
-      const data = await response.json()
+      const data = await api.get(`/api/drinks/${encodedName}`)
       setSelectedDrink(data)
     } catch (err) {
       console.error('Error fetching drink details:', err)
@@ -66,9 +57,7 @@ function App() {
     try {
       setLoading(true)
       setActiveFilters({ method: null, glass: null })
-      const response = await fetch(`/api/drinks/search/${encodeURIComponent(searchQuery)}`)
-      if (!response.ok) throw new Error('Search failed')
-      const data = await response.json()
+      const data = await api.get(`/api/drinks/search/${encodeURIComponent(searchQuery)}`)
       setDrinks(data)
     } catch (err) {
       setError(err.message)
@@ -88,12 +77,7 @@ function App() {
       if (newFilters.method) params.append('method', newFilters.method)
       if (newFilters.glass) params.append('glass', newFilters.glass)
       
-      const response = await fetch(`/api/drinks/filter?${params.toString()}`)
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || errorData.details || `Filter failed: ${response.status}`)
-      }
-      const data = await response.json()
+      const data = await api.get(`/api/drinks/filter?${params.toString()}`)
       setDrinks(data)
       setActiveFilters(newFilters)
     } catch (err) {
@@ -154,11 +138,27 @@ function App() {
     fetchDrinks()
   }
 
+  if (showMenu) {
+    return (
+      <div className="app">
+        <div className="nav-bar">
+          <button onClick={() => setShowMenu(false)} className="nav-button">
+            ← Back to Database
+          </button>
+        </div>
+        <GameNightMenu />
+      </div>
+    )
+  }
+
   return (
     <div className="app">
       <header className="header">
         <h1>DrinksDB</h1>
         <p className="subtitle">Cocktail Recipe Database</p>
+        <button onClick={() => setShowMenu(true)} className="menu-button">
+          Game Night Menu
+        </button>
       </header>
 
       <div className="container">

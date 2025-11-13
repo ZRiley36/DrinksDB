@@ -23,6 +23,52 @@
   font-size: 1.2rem;
   color: #9ca3af;
   font-weight: 300;
+  margin-bottom: 20px;
+}
+
+.menu-button {
+  background: #4ade80;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 0;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: Georgia, serif;
+  margin-top: 10px;
+}
+
+.menu-button:hover {
+  background: #22c55e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+}
+
+.nav-bar {
+  max-width: 1400px;
+  margin: 0 auto 20px;
+  padding: 0 20px;
+}
+
+.nav-button {
+  background: #3a3a3a;
+  color: #e0e0e0;
+  border: 2px solid #4a4a4a;
+  border-radius: 0;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: Georgia, serif;
+}
+
+.nav-button:hover {
+  background: #4a4a4a;
+  border-color: #4ade80;
+  color: #4ade80;
 }
 
 .container {

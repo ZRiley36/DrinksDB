@@ -684,7 +684,7 @@ INSERT INTO drink_ingredients (drink_id, ingredient_id, amount, unit) VALUES
 ((SELECT drink_id FROM drinks WHERE name = 'Whiskey Sour'), (SELECT ingredient_id FROM ingredients WHERE name = 'Bourbon Whiskey'), '1 1/2', 'oz'),
 ((SELECT drink_id FROM drinks WHERE name = 'Whiskey Sour'), (SELECT ingredient_id FROM ingredients WHERE name = 'Fresh Lemon Juice'), '0.83', 'oz'),
 ((SELECT drink_id FROM drinks WHERE name = 'Whiskey Sour'), (SELECT ingredient_id FROM ingredients WHERE name = 'Sugar Syrup'), '3/4', 'oz'),
-((SELECT drink_id FROM drinks WHERE name = 'Whiskey Sour'), (SELECT ingredient_id FROM ingredients WHERE name = 'Egg White'), 'splash', 'splash'),
+((SELECT drink_id FROM drinks WHERE name = 'Whiskey Sour'), (SELECT ingredient_id FROM ingredients WHERE name = 'Egg White'), '1', 'splash'),
 ((SELECT drink_id FROM drinks WHERE name = 'Cardinale'), (SELECT ingredient_id FROM ingredients WHERE name = 'Gin'), '1.33', 'oz'),
 ((SELECT drink_id FROM drinks WHERE name = 'Cardinale'), (SELECT ingredient_id FROM ingredients WHERE name = 'Dry Vermouth'), '3/4', 'oz'),
 ((SELECT drink_id FROM drinks WHERE name = 'Cardinale'), (SELECT ingredient_id FROM ingredients WHERE name = 'Bitter Campari'), '1/3', 'oz'),
