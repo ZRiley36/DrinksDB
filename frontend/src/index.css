@@ -16,6 +16,18 @@ body {
   color: #e0e0e0;
 }
 
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 10px;
+  }
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

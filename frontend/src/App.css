@@ -87,6 +87,7 @@
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .search-input {
@@ -119,6 +120,8 @@
   cursor: pointer;
   transition: all 0.3s;
   font-weight: 600;
+  flex-shrink: 0;
+  min-width: fit-content;
 }
 
 .search-button {
@@ -480,6 +483,7 @@
   background: #22c55e;
 }
 
+/* Mobile responsive styles */
 @media (max-width: 968px) {
   .content {
     grid-template-columns: 1fr;
@@ -487,6 +491,87 @@
   
   .header h1 {
     font-size: 2rem;
+  }
+  
+  .container {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 0 10px;
+  }
+  
+  .header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .container {
+    padding: 15px;
+  }
+  
+  .search-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .search-input {
+    width: 100%;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .search-button,
+  .clear-button {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+  }
+  
+  .active-filter-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .clear-all-button {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .drinks-list h2 {
+    font-size: 1.3rem;
+  }
+  
+  .drink-item {
+    padding: 12px;
+  }
+  
+  .drink-name {
+    font-size: 1rem;
+  }
+  
+  .details-card {
+    padding: 20px;
+  }
+  
+  .details-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .menu-button {
+    width: 100%;
+    padding: 14px;
   }
 }
 
