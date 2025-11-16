@@ -106,7 +106,7 @@ app.get('/api/drinks/search/:query', async (req, res) => {
   }
 });
 
-// Filter drinks - supports method, glass, or both via query parameters
+// Filter drinks - supports method and glass via query parameters
 app.get('/api/drinks/filter', async (req, res) => {
   try {
     const { method, glass } = req.query;
@@ -193,8 +193,118 @@ app.get('/api/drinks/glass/:glass', async (req, res) => {
   }
 });
 
+// Get all available ingredients and unique garnishes
+app.get('/api/ingredients', async (req, res) => {
+  try {
+    // Get all ingredients
+    const ingredientsResult = await db.query(
+      'SELECT ingredient_id, name FROM ingredients ORDER BY name'
+    );
+    
+    // Get all unique garnishes (non-null, non-empty)
+    const garnishesResult = await db.query(
+      `SELECT DISTINCT garnish as name 
+       FROM drinks 
+       WHERE garnish IS NOT NULL AND garnish != '' 
+       ORDER BY garnish`
+    );
+    
+    // Combine ingredients and garnishes, removing duplicates
+    const allItems = new Map();
+    
+    // Add ingredients
+    ingredientsResult.rows.forEach(ing => {
+      allItems.set(ing.name.toLowerCase(), {
+        ingredient_id: ing.ingredient_id,
+        name: ing.name,
+        type: 'ingredient'
+      });
+    });
+    
+    // Add garnishes (only if not already in ingredients)
+    garnishesResult.rows.forEach(garnish => {
+      const key = garnish.name.toLowerCase();
+      if (!allItems.has(key)) {
+        allItems.set(key, {
+          ingredient_id: null,
+          name: garnish.name,
+          type: 'garnish'
+        });
+      }
+    });
+    
+    // Convert to array and sort
+    const result = Array.from(allItems.values()).sort((a, b) => 
+      a.name.localeCompare(b.name)
+    );
+    
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching ingredients:', err);
+    res.status(500).json({ error: 'Failed to fetch ingredients', details: err.message });
+  }
+});
+
+// Search drinks by ingredients (AND logic - drinks must contain all specified ingredients)
+// Also searches garnishes - if an ingredient matches a garnish, it will find drinks with that garnish
+// This must come BEFORE /api/drinks/:name to avoid matching "by-ingredients" as a drink name
+app.get('/api/drinks/by-ingredients', async (req, res) => {
+  try {
+    const ingredients = req.query.ingredients;
+    
+    if (!ingredients) {
+      return res.status(400).json({ error: 'Ingredients parameter is required' });
+    }
+    
+    // Handle both single ingredient and comma-separated list
+    const ingredientList = Array.isArray(ingredients) 
+      ? ingredients 
+      : ingredients.split(',').map(i => i.trim()).filter(Boolean);
+    
+    if (ingredientList.length === 0) {
+      return res.status(400).json({ error: 'At least one ingredient is required' });
+    }
+    
+    // Build query to find drinks that contain ALL specified ingredients
+    // Search both in ingredients table AND in garnish field
+    const params = [];
+    const ingredientConditions = [];
+    
+    ingredientList.forEach((ingredient, index) => {
+      params.push(`%${ingredient}%`);
+      // Search in both ingredients and garnishes
+      ingredientConditions.push(`(
+        EXISTS (
+          SELECT 1 
+          FROM drink_ingredients di
+          JOIN ingredients i ON di.ingredient_id = i.ingredient_id
+          WHERE di.drink_id = d.drink_id
+          AND LOWER(i.name) LIKE LOWER($${index + 1})
+        )
+        OR LOWER(d.garnish) LIKE LOWER($${index + 1})
+      )`);
+    });
+    
+    const query = `
+      SELECT DISTINCT d.drink_id, d.name, d.glass_type, d.build_method, d.garnish
+      FROM drinks d
+      WHERE ${ingredientConditions.join(' AND ')}
+      ORDER BY d.name
+    `;
+    
+    console.log(`Searching drinks by ingredients/garnishes: ${ingredientList.join(', ')}`);
+    const result = await db.query(query, params);
+    console.log(`Found ${result.rows.length} drinks`);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error searching drinks by ingredients:', err);
+    console.error('Error details:', err.message, err.stack);
+    res.status(500).json({ error: 'Failed to search drinks by ingredients', details: err.message });
+  }
+});
+
 // Get drink by name with full details including ingredients
-// This must come LAST to avoid matching "method", "glass", "search", or "filter" as drink names
+// This must come LAST to avoid matching "method", "glass", "search", "filter", or "by-ingredients" as drink names
 app.get('/api/drinks/:name', async (req, res) => {
   try {
     const drinkName = decodeURIComponent(req.params.name);

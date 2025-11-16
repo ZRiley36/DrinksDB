@@ -5,18 +5,33 @@ import { api } from './api'
 
 function App() {
   const [showMenu, setShowMenu] = useState(false)
+  const [activeTab, setActiveTab] = useState('search') // 'search' or 'ingredients'
   const [drinks, setDrinks] = useState([])
   const [selectedDrink, setSelectedDrink] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [activeFilters, setActiveFilters] = useState({ method: null, glass: null })
+  const [availableIngredients, setAvailableIngredients] = useState([])
+  const [selectedIngredients, setSelectedIngredients] = useState([])
+  const [ingredientInput, setIngredientInput] = useState('')
+  const [ingredientSuggestions, setIngredientSuggestions] = useState([])
 
-  // Fetch all drinks on mount
+  // Fetch all drinks and ingredients on mount
   useEffect(() => {
     console.log('🚀 App mounted, fetching drinks...')
     fetchDrinks()
+    fetchIngredients()
   }, [])
+
+  const fetchIngredients = async () => {
+    try {
+      const data = await api.get('/api/ingredients')
+      setAvailableIngredients(data)
+    } catch (err) {
+      console.error('Failed to fetch ingredients:', err)
+    }
+  }
 
   const fetchDrinks = async () => {
     try {
@@ -149,6 +164,71 @@ function App() {
     fetchDrinks()
   }
 
+  // Ingredient search functions
+  const handleIngredientInputChange = (e) => {
+    const value = e.target.value
+    setIngredientInput(value)
+    
+    if (value.trim()) {
+      const filtered = availableIngredients
+        .filter(ing => 
+          ing.name.toLowerCase().includes(value.toLowerCase()) &&
+          !selectedIngredients.includes(ing.name)
+        )
+        .slice(0, 10)
+      setIngredientSuggestions(filtered)
+    } else {
+      setIngredientSuggestions([])
+    }
+  }
+
+  const addIngredient = (ingredientName) => {
+    if (ingredientName && !selectedIngredients.includes(ingredientName)) {
+      setSelectedIngredients([...selectedIngredients, ingredientName])
+      setIngredientInput('')
+      setIngredientSuggestions([])
+    }
+  }
+
+  const removeIngredient = (ingredientName) => {
+    setSelectedIngredients(selectedIngredients.filter(ing => ing !== ingredientName))
+  }
+
+  const searchByIngredients = async () => {
+    if (selectedIngredients.length === 0) {
+      setError('Please select at least one ingredient')
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+      setSelectedDrink(null)
+      setSearchQuery('')
+      setActiveFilters({ method: null, glass: null, garnish: null })
+      
+      const params = new URLSearchParams()
+      selectedIngredients.forEach(ing => params.append('ingredients', ing))
+      
+      console.log('🔍 Searching drinks by ingredients:', selectedIngredients)
+      const data = await api.get(`/api/drinks/by-ingredients?${params.toString()}`)
+      console.log('✅ Ingredient search results:', data.length)
+      setDrinks(data)
+    } catch (err) {
+      console.error('❌ Ingredient search failed:', err)
+      setError(`Search failed: ${err.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const clearIngredientSearch = () => {
+    setSelectedIngredients([])
+    setIngredientInput('')
+    setIngredientSuggestions([])
+    fetchDrinks()
+  }
+
   if (showMenu) {
     return (
       <div className="app">
@@ -158,6 +238,11 @@ function App() {
           </button>
         </div>
         <GameNightMenu />
+        <footer className="footer">
+          <a href="https://zachriley.dev" target="_blank" rel="noopener noreferrer" className="footer-link">
+            Zach Riley
+          </a>
+        </footer>
       </div>
     )
   }
@@ -173,30 +258,126 @@ function App() {
       </header>
 
       <div className="container">
-        <div className="search-section">
-          <form onSubmit={handleSearch} className="search-form">
-            <input
-              type="text"
-              placeholder="Search for a drink..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-            <button type="submit" className="search-button">
-              Search
-            </button>
-            <button 
-              type="button" 
-              onClick={() => {
-                clearFilters()
-                setSelectedDrink(null)
-              }}
-              className="clear-button"
-            >
-              Clear
-            </button>
-          </form>
+        <div className="tabs">
+          <button
+            className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('search')
+              clearFilters()
+              setSelectedDrink(null)
+            }}
+          >
+            Search
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'ingredients' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('ingredients')
+              clearFilters()
+              setSelectedDrink(null)
+            }}
+          >
+            Search by Ingredients
+          </button>
         </div>
+
+        {activeTab === 'search' ? (
+          <div className="search-section">
+            <form onSubmit={handleSearch} className="search-form">
+              <input
+                type="text"
+                placeholder="Search for a drink..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+              <button type="submit" className="search-button">
+                Search
+              </button>
+              <button 
+                type="button" 
+                onClick={() => {
+                  clearFilters()
+                  setSelectedDrink(null)
+                }}
+                className="clear-button"
+              >
+                Clear
+              </button>
+            </form>
+          </div>
+        ) : (
+          <div className="ingredient-search-section">
+            <div className="ingredient-input-wrapper">
+              <input
+                type="text"
+                placeholder="Type ingredient name..."
+                value={ingredientInput}
+                onChange={handleIngredientInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (ingredientSuggestions.length > 0) {
+                      addIngredient(ingredientSuggestions[0].name)
+                    } else if (ingredientInput.trim()) {
+                      addIngredient(ingredientInput.trim())
+                    }
+                  }
+                }}
+                className="ingredient-input"
+              />
+              {ingredientSuggestions.length > 0 && (
+                <div className="ingredient-suggestions">
+                  {ingredientSuggestions.map((ing) => (
+                    <div
+                      key={ing.ingredient_id}
+                      className="ingredient-suggestion-item"
+                      onClick={() => addIngredient(ing.name)}
+                    >
+                      {ing.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {selectedIngredients.length > 0 && (
+              <div className="selected-ingredients">
+                <div className="selected-ingredients-label">Selected ingredients:</div>
+                <div className="selected-ingredients-list">
+                  {selectedIngredients.map((ing) => (
+                    <span key={ing} className="ingredient-tag">
+                      {ing}
+                      <button
+                        onClick={() => removeIngredient(ing)}
+                        className="remove-ingredient-button"
+                        title="Remove ingredient"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="ingredient-search-actions">
+              <button
+                onClick={searchByIngredients}
+                className="search-button"
+                disabled={selectedIngredients.length === 0}
+              >
+                Search Drinks
+              </button>
+              <button
+                onClick={clearIngredientSearch}
+                className="clear-button"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="error-message">
@@ -341,6 +522,11 @@ function App() {
           </div>
         </div>
       </div>
+      <footer className="footer">
+        <a href="https://zachriley.dev" target="_blank" rel="noopener noreferrer" className="footer-link">
+          Zach Riley
+        </a>
+      </footer>
     </div>
   )
 }
