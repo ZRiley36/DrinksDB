@@ -193,12 +193,12 @@ app.get('/api/drinks/glass/:glass', async (req, res) => {
   }
 });
 
-// Get all available ingredients and unique garnishes
+// Get all available ingredients, unique garnishes, and subcategories
 app.get('/api/ingredients', async (req, res) => {
   try {
-    // Get all ingredients
+    // Get all ingredients with their subcategories
     const ingredientsResult = await db.query(
-      'SELECT ingredient_id, name FROM ingredients ORDER BY name'
+      'SELECT ingredient_id, name, subcategory FROM ingredients ORDER BY name'
     );
     
     // Get all unique garnishes (non-null, non-empty)
@@ -209,7 +209,15 @@ app.get('/api/ingredients', async (req, res) => {
        ORDER BY garnish`
     );
     
-    // Combine ingredients and garnishes, removing duplicates
+    // Get all unique subcategories (for liquor types like Whiskey, Gin, etc.)
+    const subcategoriesResult = await db.query(
+      `SELECT DISTINCT subcategory as name
+       FROM ingredients
+       WHERE subcategory IS NOT NULL AND subcategory != ''
+       ORDER BY subcategory`
+    );
+    
+    // Combine ingredients, garnishes, and subcategories, removing duplicates
     const allItems = new Map();
     
     // Add ingredients
@@ -217,7 +225,8 @@ app.get('/api/ingredients', async (req, res) => {
       allItems.set(ing.name.toLowerCase(), {
         ingredient_id: ing.ingredient_id,
         name: ing.name,
-        type: 'ingredient'
+        type: 'ingredient',
+        subcategory: ing.subcategory
       });
     });
     
@@ -233,10 +242,26 @@ app.get('/api/ingredients', async (req, res) => {
       }
     });
     
+    // Add subcategories as searchable items (prefixed to distinguish them)
+    subcategoriesResult.rows.forEach(subcat => {
+      const key = `[subcategory]${subcat.name.toLowerCase()}`;
+      if (!allItems.has(key)) {
+        allItems.set(key, {
+          ingredient_id: null,
+          name: subcat.name,
+          type: 'subcategory',
+          displayName: `${subcat.name} (any)`
+        });
+      }
+    });
+    
     // Convert to array and sort
-    const result = Array.from(allItems.values()).sort((a, b) => 
-      a.name.localeCompare(b.name)
-    );
+    const result = Array.from(allItems.values()).sort((a, b) => {
+      // Sort subcategories first, then others
+      if (a.type === 'subcategory' && b.type !== 'subcategory') return -1;
+      if (a.type !== 'subcategory' && b.type === 'subcategory') return 1;
+      return a.name.localeCompare(b.name);
+    });
     
     res.json(result);
   } catch (err) {
@@ -265,24 +290,52 @@ app.get('/api/drinks/by-ingredients', async (req, res) => {
       return res.status(400).json({ error: 'At least one ingredient is required' });
     }
     
+    // Get all valid subcategories to check against
+    const subcategoriesResult = await db.query(
+      `SELECT DISTINCT LOWER(subcategory) as subcat
+       FROM ingredients
+       WHERE subcategory IS NOT NULL AND subcategory != ''`
+    );
+    const validSubcategories = new Set(subcategoriesResult.rows.map(r => r.subcat));
+    
     // Build query to find drinks that contain ALL specified ingredients
     // Search both in ingredients table AND in garnish field
     const params = [];
     const ingredientConditions = [];
+    let paramIndex = 1;
     
-    ingredientList.forEach((ingredient, index) => {
-      params.push(`%${ingredient}%`);
-      // Search in both ingredients and garnishes
-      ingredientConditions.push(`(
-        EXISTS (
-          SELECT 1 
-          FROM drink_ingredients di
-          JOIN ingredients i ON di.ingredient_id = i.ingredient_id
-          WHERE di.drink_id = d.drink_id
-          AND LOWER(i.name) LIKE LOWER($${index + 1})
-        )
-        OR LOWER(d.garnish) LIKE LOWER($${index + 1})
-      )`);
+    ingredientList.forEach((ingredient) => {
+      const ingredientLower = ingredient.toLowerCase();
+      
+      // Check if this is a subcategory search (exact match for subcategory)
+      if (validSubcategories.has(ingredientLower)) {
+        // Exact subcategory match - find drinks with any ingredient of this subcategory
+        params.push(ingredientLower);
+        ingredientConditions.push(`(
+          EXISTS (
+            SELECT 1 
+            FROM drink_ingredients di
+            JOIN ingredients i ON di.ingredient_id = i.ingredient_id
+            WHERE di.drink_id = d.drink_id
+            AND LOWER(i.subcategory) = $${paramIndex}
+          )
+        )`);
+        paramIndex++;
+      } else {
+        // Regular ingredient/garnish search with LIKE
+        params.push(`%${ingredient}%`);
+        ingredientConditions.push(`(
+          EXISTS (
+            SELECT 1 
+            FROM drink_ingredients di
+            JOIN ingredients i ON di.ingredient_id = i.ingredient_id
+            WHERE di.drink_id = d.drink_id
+            AND LOWER(i.name) LIKE LOWER($${paramIndex})
+          )
+          OR LOWER(d.garnish) LIKE LOWER($${paramIndex})
+        )`);
+        paramIndex++;
+      }
     });
     
     const query = `

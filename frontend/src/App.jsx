@@ -171,10 +171,14 @@ function App() {
     
     if (value.trim()) {
       const filtered = availableIngredients
-        .filter(ing => 
-          ing.name.toLowerCase().includes(value.toLowerCase()) &&
-          !selectedIngredients.includes(ing.name)
-        )
+        .filter(ing => {
+          const searchName = ing.displayName || ing.name
+          const searchValue = value.toLowerCase()
+          return (
+            searchName.toLowerCase().includes(searchValue) &&
+            !selectedIngredients.includes(ing.name)
+          )
+        })
         .slice(0, 10)
       setIngredientSuggestions(filtered)
     } else {
@@ -182,7 +186,9 @@ function App() {
     }
   }
 
-  const addIngredient = (ingredientName) => {
+  const addIngredient = (ingredient) => {
+    // Handle both direct name strings and ingredient objects
+    const ingredientName = typeof ingredient === 'string' ? ingredient : ingredient.name
     if (ingredientName && !selectedIngredients.includes(ingredientName)) {
       setSelectedIngredients([...selectedIngredients, ingredientName])
       setIngredientInput('')
@@ -318,7 +324,7 @@ function App() {
                   if (e.key === 'Enter') {
                     e.preventDefault()
                     if (ingredientSuggestions.length > 0) {
-                      addIngredient(ingredientSuggestions[0].name)
+                      addIngredient(ingredientSuggestions[0])
                     } else if (ingredientInput.trim()) {
                       addIngredient(ingredientInput.trim())
                     }
@@ -330,11 +336,11 @@ function App() {
                 <div className="ingredient-suggestions">
                   {ingredientSuggestions.map((ing) => (
                     <div
-                      key={ing.ingredient_id}
-                      className="ingredient-suggestion-item"
-                      onClick={() => addIngredient(ing.name)}
+                      key={ing.ingredient_id || `subcat-${ing.name}`}
+                      className={`ingredient-suggestion-item ${ing.type === 'subcategory' ? 'subcategory-item' : ''}`}
+                      onClick={() => addIngredient(ing)}
                     >
-                      {ing.name}
+                      {ing.displayName || ing.name}
                     </div>
                   ))}
                 </div>
@@ -345,18 +351,23 @@ function App() {
               <div className="selected-ingredients">
                 <div className="selected-ingredients-label">Selected ingredients:</div>
                 <div className="selected-ingredients-list">
-                  {selectedIngredients.map((ing) => (
-                    <span key={ing} className="ingredient-tag">
-                      {ing}
-                      <button
-                        onClick={() => removeIngredient(ing)}
-                        className="remove-ingredient-button"
-                        title="Remove ingredient"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
+                  {selectedIngredients.map((ing) => {
+                    // Find the ingredient object to get display name if it's a subcategory
+                    const ingObj = availableIngredients.find(i => i.name === ing)
+                    const displayName = ingObj?.displayName || ing
+                    return (
+                      <span key={ing} className="ingredient-tag">
+                        {displayName}
+                        <button
+                          onClick={() => removeIngredient(ing)}
+                          className="remove-ingredient-button"
+                          title="Remove ingredient"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    )
+                  })}
                 </div>
               </div>
             )}
