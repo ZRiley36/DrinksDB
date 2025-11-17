@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import GameNightMenu from './GameNightMenu'
 import { api } from './api'
+import { getGlassIcon } from './glassIcons'
 
 function App() {
   const [showMenu, setShowMenu] = useState(false)
@@ -440,6 +441,9 @@ function App() {
                           }}
                           title="Click to filter by this glass type"
                         >
+                          {getGlassIcon(drink.glass_type) && (
+                            <img src={getGlassIcon(drink.glass_type)} alt={drink.glass_type} className="glass-icon" />
+                          )}
                           {drink.glass_type}
                         </span>
                       )}
@@ -480,6 +484,9 @@ function App() {
                         onClick={() => filterByGlass(selectedDrink.glass_type)}
                         title="Click to filter by this glass type"
                       >
+                        {getGlassIcon(selectedDrink.glass_type) && (
+                          <img src={getGlassIcon(selectedDrink.glass_type)} alt={selectedDrink.glass_type} className="glass-icon" />
+                        )}
                         {selectedDrink.glass_type}
                       </span>
                     ) : (

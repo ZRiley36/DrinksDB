@@ -5,6 +5,7 @@
   font-family: Georgia, serif;
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 @media (max-width: 640px) {
@@ -148,11 +149,22 @@
   color: #e0e0e0;
   font-size: 0.95rem;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .detail-row strong {
   color: #4ade80;
   margin-right: 8px;
+}
+
+.glass-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  vertical-align: middle;
+  filter: brightness(0) saturate(100%) invert(73%) sepia(98%) saturate(1352%) hue-rotate(88deg) brightness(119%) contrast(119%);
 }
 
 .ingredients-section {

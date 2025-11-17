@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './GameNightMenu.css'
 import { api } from './api'
+import { getGlassIcon } from './glassIcons'
 
 function GameNightMenu() {
   const [menuItems, setMenuItems] = useState([])
@@ -103,7 +104,11 @@ function GameNightMenu() {
                       <div className="details-section">
                         {details.glass_type && (
                           <div className="detail-row">
-                            <strong>Glass:</strong> {details.glass_type}
+                            <strong>Glass:</strong>{' '}
+                            {getGlassIcon(details.glass_type) && (
+                              <img src={getGlassIcon(details.glass_type)} alt={details.glass_type} className="glass-icon" />
+                            )}
+                            {details.glass_type}
                           </div>
                         )}
                         {details.build_method && (
