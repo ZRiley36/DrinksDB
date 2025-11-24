@@ -418,6 +418,159 @@ app.get('/api/game-night-menu', async (req, res) => {
   }
 });
 
+// Get recommendations for a drink (content-based, using ingredient similarity)
+// This must come BEFORE /api/drinks/:name to avoid matching "recommendations" as a drink name
+app.get('/api/drinks/:name/recommendations', async (req, res) => {
+  try {
+    const drinkName = decodeURIComponent(req.params.name);
+    const limit = parseInt(req.query.limit) || 10;
+    
+    // Get the drink_id and its ingredients
+    const drinkResult = await db.query(
+      `SELECT d.drink_id 
+       FROM drinks d 
+       WHERE LOWER(d.name) = LOWER($1)`,
+      [drinkName]
+    );
+    
+    if (drinkResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Drink not found' });
+    }
+    
+    const drinkId = drinkResult.rows[0].drink_id;
+    
+    // Find similar drinks based on shared ingredients (Jaccard similarity)
+    const recommendations = await db.query(
+      `WITH target_ingredients AS (
+        SELECT ingredient_id FROM drink_ingredients WHERE drink_id = $1
+      ),
+      drink_similarity AS (
+        SELECT 
+          d.drink_id,
+          d.name,
+          d.glass_type,
+          d.build_method,
+          d.garnish,
+          COUNT(DISTINCT di.ingredient_id) FILTER (
+            WHERE di.ingredient_id IN (SELECT ingredient_id FROM target_ingredients)
+          ) as common_ingredients,
+          COUNT(DISTINCT di.ingredient_id) as total_ingredients,
+          COUNT(DISTINCT CASE 
+            WHEN di.ingredient_id IN (SELECT ingredient_id FROM target_ingredients) 
+            THEN di.ingredient_id 
+          END) + COUNT(DISTINCT CASE 
+            WHEN di.ingredient_id NOT IN (SELECT ingredient_id FROM target_ingredients) 
+            THEN di.ingredient_id 
+          END) as union_ingredients
+        FROM drinks d
+        JOIN drink_ingredients di ON d.drink_id = di.drink_id
+        WHERE d.drink_id != $1
+        GROUP BY d.drink_id, d.name, d.glass_type, d.build_method, d.garnish
+      )
+      SELECT 
+        drink_id,
+        name,
+        glass_type,
+        build_method,
+        garnish,
+        common_ingredients,
+        total_ingredients,
+        CASE 
+          WHEN union_ingredients > 0 
+          THEN ROUND((common_ingredients::NUMERIC / union_ingredients::NUMERIC) * 100, 2)
+          ELSE 0
+        END as similarity_score
+      FROM drink_similarity
+      WHERE union_ingredients > 0
+      ORDER BY similarity_score DESC, common_ingredients DESC
+      LIMIT $2`,
+      [drinkId, limit]
+    );
+    
+    res.json(recommendations.rows);
+  } catch (err) {
+    console.error('Error getting recommendations:', err);
+    console.error('Error details:', err.message, err.stack);
+    res.status(500).json({ error: 'Failed to get recommendations', details: err.message });
+  }
+});
+
+// Recommend drinks based on available ingredients
+app.post('/api/recommendations/by-ingredients', async (req, res) => {
+  try {
+    const { ingredient_ids, ingredient_names, min_match_percentage } = req.body;
+    
+    let ingredientIdList = [];
+    
+    // Support both ingredient IDs and names
+    if (ingredient_ids && Array.isArray(ingredient_ids)) {
+      ingredientIdList = ingredient_ids;
+    } else if (ingredient_names && Array.isArray(ingredient_names)) {
+      // Look up ingredient IDs from names
+      const placeholders = ingredient_names.map((_, i) => `$${i + 1}`).join(',');
+      const nameResult = await db.query(
+        `SELECT ingredient_id FROM ingredients WHERE name = ANY(ARRAY[${placeholders}])`,
+        ingredient_names
+      );
+      ingredientIdList = nameResult.rows.map(r => r.ingredient_id);
+    } else {
+      return res.status(400).json({ 
+        error: 'Either ingredient_ids or ingredient_names array is required' 
+      });
+    }
+    
+    if (ingredientIdList.length === 0) {
+      return res.status(400).json({ error: 'No valid ingredients found' });
+    }
+    
+    const minMatch = min_match_percentage || 50;
+    
+    // Find drinks that can be made with available ingredients
+    const result = await db.query(
+      `WITH drink_stats AS (
+        SELECT 
+          d.drink_id,
+          d.name,
+          d.glass_type,
+          d.build_method,
+          d.garnish,
+          COUNT(DISTINCT di.ingredient_id) FILTER (
+            WHERE di.ingredient_id = ANY($1::INT[])
+          ) as matched_ingredients,
+          COUNT(DISTINCT di.ingredient_id) as total_ingredients,
+          ARRAY_AGG(i.name) FILTER (
+            WHERE di.ingredient_id != ALL($1::INT[])
+          ) as missing_ingredients
+        FROM drinks d
+        JOIN drink_ingredients di ON d.drink_id = di.drink_id
+        JOIN ingredients i ON di.ingredient_id = i.ingredient_id
+        GROUP BY d.drink_id, d.name, d.glass_type, d.build_method, d.garnish
+      )
+      SELECT 
+        drink_id,
+        name,
+        glass_type,
+        build_method,
+        garnish,
+        matched_ingredients,
+        total_ingredients,
+        ROUND((matched_ingredients::NUMERIC / NULLIF(total_ingredients, 0) * 100), 2) as match_percentage,
+        COALESCE(missing_ingredients, ARRAY[]::TEXT[]) as missing_ingredients
+      FROM drink_stats
+      WHERE (matched_ingredients::NUMERIC / NULLIF(total_ingredients, 0) * 100) >= $2
+      ORDER BY match_percentage DESC, total_ingredients ASC
+      LIMIT 20`,
+      [ingredientIdList, minMatch]
+    );
+    
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error getting ingredient-based recommendations:', err);
+    console.error('Error details:', err.message, err.stack);
+    res.status(500).json({ error: 'Failed to get recommendations', details: err.message });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
