@@ -28,6 +28,14 @@
   margin-bottom: 20px;
 }
 
+.menu-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
 .menu-button {
   background: #4ade80;
   color: #1a1a1a;
@@ -39,7 +47,6 @@
   cursor: pointer;
   transition: all 0.3s;
   font-family: Georgia, serif;
-  margin-top: 10px;
 }
 
 .menu-button:hover {

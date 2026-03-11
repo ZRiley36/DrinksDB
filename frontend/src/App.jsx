@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import GameNightMenu from './GameNightMenu'
+import DrinksWithRishaMenu from './DrinksWithRishaMenu'
 import { api } from './api'
 import { getGlassIcon } from './glassIcons'
 
 function App() {
-  const [showMenu, setShowMenu] = useState(false)
+  const [showMenu, setShowMenu] = useState(false) // false | 'game-night' | 'risha'
   const [activeTab, setActiveTab] = useState('search') // 'search' or 'ingredients'
   const [drinks, setDrinks] = useState([])
   const [selectedDrink, setSelectedDrink] = useState(null)
@@ -244,7 +245,8 @@ function App() {
             ← Back to Database
           </button>
         </div>
-        <GameNightMenu />
+        {showMenu === 'game-night' && <GameNightMenu />}
+        {showMenu === 'risha' && <DrinksWithRishaMenu />}
         <footer className="footer">
           <a href="https://zachriley.dev" target="_blank" rel="noopener noreferrer" className="footer-link">
             Zach Riley
@@ -259,9 +261,14 @@ function App() {
       <header className="header">
         <h1>DrinksDB</h1>
         <p className="subtitle">Cocktail Recipe Database</p>
-        <button onClick={() => setShowMenu(true)} className="menu-button">
-          Game Night Menu
-        </button>
+        <div className="menu-buttons">
+          <button onClick={() => setShowMenu('game-night')} className="menu-button">
+            Game Night Menu
+          </button>
+          <button onClick={() => setShowMenu('risha')} className="menu-button">
+            Drinks with Risha
+          </button>
+        </div>
       </header>
 
       <div className="container">

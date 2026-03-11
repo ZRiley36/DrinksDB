@@ -1,5 +1,6 @@
 const { Pool } = require('pg');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', 'DrinksDB.env') });
 
 // Support both DATABASE_URL (connection string) and individual parameters
 let poolConfig;
@@ -12,12 +13,14 @@ if (process.env.DATABASE_URL) {
   };
 } else {
   // Use individual parameters
+  const host = process.env.DB_HOST || 'localhost';
   poolConfig = {
     user: process.env.DB_USER || 'postgres',
-    host: process.env.DB_HOST || 'localhost',
+    host,
     database: process.env.DB_NAME || 'drinksdb_81xl',
     password: process.env.DB_PASSWORD || 'poopbutt',
     port: process.env.DB_PORT || 5432,
+    ...(host.includes('render.com') && { ssl: { rejectUnauthorized: false } }),
   };
 }
 

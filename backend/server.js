@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', 'DrinksDB.env') });
 const db = require('./db');
 
 const app = express();
@@ -415,6 +416,29 @@ app.get('/api/game-night-menu', async (req, res) => {
     console.error('Error fetching game night menu:', err);
     console.error('Error details:', err.message, err.stack);
     res.status(500).json({ error: 'Failed to fetch game night menu', details: err.message });
+  }
+});
+
+// Get Drinks with Risha Menu (pulls from DB; uses db_drink_name for join)
+app.get('/api/drinks-with-risha-menu', async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT 
+         m.menu_id, 
+         m.drink_name, 
+         m.db_drink_name,
+         m.description, 
+         m.display_order,
+         d.drink_id
+       FROM drinks_with_risha_menu m
+       LEFT JOIN drinks d ON LOWER(COALESCE(m.db_drink_name, m.drink_name)) = LOWER(d.name)
+       ORDER BY m.display_order ASC`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching drinks with Risha menu:', err);
+    console.error('Error details:', err.message, err.stack);
+    res.status(500).json({ error: 'Failed to fetch drinks with Risha menu', details: err.message });
   }
 });
 

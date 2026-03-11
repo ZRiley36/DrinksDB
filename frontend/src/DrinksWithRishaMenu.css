@@ -1,0 +1,310 @@
+.drinks-with-risha-menu {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Georgia, serif;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .drinks-with-risha-menu {
+    padding: 10px;
+  }
+}
+
+.drinks-with-risha-menu .menu-header {
+  text-align: center;
+  color: #e0e0e0;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.drinks-with-risha-menu .menu-header h1 {
+  font-size: 4.5rem;
+  margin-bottom: 10px;
+  color: #4ade80;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.drinks-with-risha-menu .menu-subtitle {
+  font-size: 1.5rem;
+  color: #9ca3af;
+  font-weight: 300;
+}
+
+.drinks-with-risha-menu .menu-container {
+  background: #2d2d2d;
+  border-radius: 0;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border: 1px solid #3a3a3a;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .drinks-with-risha-menu .menu-container {
+    padding: 20px 15px;
+  }
+}
+
+.drinks-with-risha-menu .menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.drinks-with-risha-menu .menu-item {
+  background: #1a1a1a;
+  border: 2px solid #3a3a3a;
+  border-radius: 0;
+  padding: 20px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.drinks-with-risha-menu .menu-item:hover {
+  border-color: #4ade80;
+  transform: translateX(5px);
+}
+
+.drinks-with-risha-menu .menu-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  gap: 20px;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+.drinks-with-risha-menu .expand-icon {
+  color: #4ade80;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: auto;
+  min-width: 24px;
+  text-align: center;
+}
+
+.drinks-with-risha-menu .menu-item-name {
+  color: #4ade80;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.drinks-with-risha-menu .menu-item-description {
+  color: #9ca3af;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 10px 0;
+  font-style: italic;
+}
+
+.drinks-with-risha-menu .menu-item.expanded {
+  border-color: #4ade80;
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+}
+
+.drinks-with-risha-menu .menu-item-details {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #3a3a3a;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.drinks-with-risha-menu .details-section {
+  margin-bottom: 20px;
+}
+
+.drinks-with-risha-menu .detail-row {
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drinks-with-risha-menu .detail-row strong {
+  color: #4ade80;
+  margin-right: 8px;
+}
+
+.drinks-with-risha-menu .glass-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  vertical-align: middle;
+  filter: brightness(0) saturate(100%) invert(73%) sepia(98%) saturate(1352%) hue-rotate(88deg) brightness(119%) contrast(119%);
+}
+
+.drinks-with-risha-menu .ingredients-section {
+  margin-top: 20px;
+}
+
+.drinks-with-risha-menu .ingredients-section h4 {
+  color: #4ade80;
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+  font-weight: 600;
+  border-bottom: 2px solid #4ade80;
+  padding-bottom: 8px;
+}
+
+.drinks-with-risha-menu .ingredients-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.drinks-with-risha-menu .ingredient-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 6px;
+  background: #2d2d2d;
+  border-left: 3px solid #4ade80;
+  position: relative;
+}
+
+.drinks-with-risha-menu .ingredient-amount {
+  font-weight: 600;
+  color: #4ade80;
+  min-width: 100px;
+}
+
+.drinks-with-risha-menu .ingredient-name {
+  flex: 1;
+  color: #e0e0e0;
+}
+
+.drinks-with-risha-menu .loading-details {
+  color: #9ca3af;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+.drinks-with-risha-menu .error-message {
+  background: #3a1f1f;
+  color: #ef4444;
+  padding: 12px 16px;
+  border-radius: 0;
+  margin-bottom: 20px;
+  border-left: 4px solid #ef4444;
+}
+
+.drinks-with-risha-menu .loading {
+  text-align: center;
+  padding: 40px;
+  color: #4ade80;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .drinks-with-risha-menu .menu-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .drinks-with-risha-menu .menu-subtitle {
+    font-size: 1.2rem;
+  }
+
+  .drinks-with-risha-menu .menu-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .drinks-with-risha-menu .menu-item-name {
+    font-size: 1.5rem;
+    width: 100%;
+  }
+
+  .drinks-with-risha-menu .expand-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .drinks-with-risha-menu .menu-header h1 {
+    font-size: 2rem;
+  }
+
+  .drinks-with-risha-menu .menu-subtitle {
+    font-size: 1rem;
+  }
+
+  .drinks-with-risha-menu .menu-container {
+    padding: 15px;
+  }
+
+  .drinks-with-risha-menu .menu-item {
+    padding: 15px;
+  }
+
+  .drinks-with-risha-menu .menu-item-name {
+    font-size: 1.3rem;
+    line-height: 1.3;
+  }
+
+  .drinks-with-risha-menu .menu-item-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .drinks-with-risha-menu .menu-item-header {
+    gap: 8px;
+  }
+
+  .drinks-with-risha-menu .expand-icon {
+    font-size: 1.3rem;
+  }
+
+  .drinks-with-risha-menu .menu-item-details {
+    margin-top: 15px;
+    padding-top: 15px;
+  }
+
+  .drinks-with-risha-menu .detail-row {
+    font-size: 0.9rem;
+  }
+
+  .drinks-with-risha-menu .ingredients-section h4 {
+    font-size: 1.1rem;
+  }
+
+  .drinks-with-risha-menu .ingredient-item {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .drinks-with-risha-menu .ingredient-amount {
+    min-width: 80px;
+    font-size: 0.85rem;
+  }
+}
