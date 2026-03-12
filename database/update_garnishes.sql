@@ -29,14 +29,14 @@ UPDATE drinks SET garnish = '3 coffee beans' WHERE LOWER(name) = LOWER('Espresso
 UPDATE drinks SET garnish = 'orange zest and maraschino cherry.' WHERE LOWER(name) = LOWER('Champagne Cocktail');
 UPDATE drinks SET garnish = 'sprigs of mint and slice of lime.' WHERE LOWER(name) = LOWER('Mojito');
 UPDATE drinks SET garnish = 'a slice of lime.' WHERE LOWER(name) = LOWER('Paloma');
-UPDATE drinks SET garnish = 'half orange slice and a lemon zest.' WHERE LOWER(name) = LOWER('Americano');
+UPDATE drinks SET garnish = 'Orange slice' WHERE LOWER(name) = LOWER('Americano');
 UPDATE drinks SET garnish = 'Fresh raspberries.' WHERE LOWER(name) = LOWER('Clover Club');
 UPDATE drinks SET garnish = 'lemon slice, optional lemon zest.' WHERE LOWER(name) = LOWER('Gin Fizz');
 UPDATE drinks SET garnish = 'mint leaves and grated nutmeg.' WHERE LOWER(name) = LOWER('Chartreuse Swizzle');
 UPDATE drinks SET garnish = 'Optionally garnish with a lemon or orange zest.' WHERE LOWER(name) = LOWER('Bee’s Knees');
 UPDATE drinks SET garnish = 'citruses and dehydrated pineapple slice.' WHERE LOWER(name) = LOWER('IBA Tiki');
 UPDATE drinks SET garnish = 'lemon zest.' WHERE LOWER(name) = LOWER('Remember the Maine');
-UPDATE drinks SET garnish = 'a orange zest, optionally a lemon zest.' WHERE LOWER(name) = LOWER('Boulevardier');
+UPDATE drinks SET garnish = 'Orange twist' WHERE LOWER(name) = LOWER('Boulevardier');
 UPDATE drinks SET garnish = 'Sprinkle with fresh ground nutmeg.' WHERE LOWER(name) = LOWER('Porto Flip');
 UPDATE drinks SET garnish = 'lime wedge.' WHERE LOWER(name) = LOWER('Cuba Libre');
 UPDATE drinks SET garnish = 'an orange wedge.' WHERE LOWER(name) = LOWER('Garibaldi');

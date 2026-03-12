@@ -85,12 +85,16 @@ function DrinksWithRishaMenu() {
               const details = drinkDetails[item.menu_id] || null
 
               return (
-                <div key={item.menu_id} className={`menu-item ${isExpanded ? 'expanded' : ''}`}>
-                  <div
-                    className="menu-item-header"
-                    onClick={() => handleDrinkClick(item)}
-                    style={{ cursor: 'pointer' }}
-                  >
+                <div
+                  key={item.menu_id}
+                  className={`menu-item ${isExpanded ? 'expanded' : ''}`}
+                  onClick={() => handleDrinkClick(item)}
+                  style={{ cursor: 'pointer' }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleDrinkClick(item); } }}
+                >
+                  <div className="menu-item-header">
                     <h3 className="menu-item-name">{item.drink_name}</h3>
                     <span className="expand-icon">{isExpanded ? '−' : '+'}</span>
                   </div>

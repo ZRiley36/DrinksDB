@@ -542,11 +542,6 @@ function App() {
           </div>
         </div>
       </div>
-      <footer className="footer">
-        <a href="https://zachriley.dev" target="_blank" rel="noopener noreferrer" className="footer-link">
-          Zach Riley
-        </a>
-      </footer>
     </div>
   )
 }
