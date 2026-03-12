@@ -24,7 +24,8 @@ function DrinksWithRishaMenu() {
       setMenuItems(data)
     } catch (err) {
       console.error('❌ Error fetching menu:', err)
-      setError(`Failed to load menu: ${err.message}`)
+      const extra = [err.details, err.hint].filter(Boolean).join(' — ')
+      setError(extra ? `${err.message} — ${extra}` : `Failed to load menu: ${err.message}`)
     } finally {
       setLoading(false)
     }

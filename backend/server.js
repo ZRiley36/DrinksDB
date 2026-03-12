@@ -438,7 +438,11 @@ app.get('/api/drinks-with-risha-menu', async (req, res) => {
   } catch (err) {
     console.error('Error fetching drinks with Risha menu:', err);
     console.error('Error details:', err.message, err.stack);
-    res.status(500).json({ error: 'Failed to fetch drinks with Risha menu', details: err.message });
+    res.status(500).json({
+      error: 'Failed to fetch drinks with Risha menu',
+      details: err.message,
+      hint: err.message.includes('does not exist') ? 'Database may be missing drinks_with_risha_menu table. Ensure Render Web Service has DATABASE_URL set to the new Postgres (Internal URL).' : undefined
+    });
   }
 });
 

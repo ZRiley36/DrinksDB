@@ -55,8 +55,10 @@ export const api = {
           errorData,
           errorMessage
         });
-        
-        throw new Error(errorMessage);
+        const err = new Error(errorMessage);
+        if (errorData.details) err.details = errorData.details;
+        if (errorData.hint) err.hint = errorData.hint;
+        throw err;
       }
       
       const data = await response.json();
