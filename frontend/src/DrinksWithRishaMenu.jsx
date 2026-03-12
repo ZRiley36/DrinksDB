@@ -157,6 +157,8 @@ function DrinksWithRishaMenu() {
           </div>
         )}
       </div>
+
+      <p className="menu-footer-note">If you want something else, lmk. Happy to make whatever.</p>
     </div>
   )
 }

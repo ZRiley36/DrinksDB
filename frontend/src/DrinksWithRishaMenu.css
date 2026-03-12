@@ -58,6 +58,15 @@
   font-style: italic;
 }
 
+.drinks-with-risha-menu .menu-footer-note {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 1rem;
+  font-style: italic;
+  margin-top: 32px;
+  padding: 0 20px;
+}
+
 .drinks-with-risha-menu .menu-container {
   background: #2d2d2d;
   border-radius: 0;
