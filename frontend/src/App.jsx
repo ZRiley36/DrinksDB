@@ -247,11 +247,6 @@ function App() {
         </div>
         {showMenu === 'game-night' && <GameNightMenu />}
         {showMenu === 'risha' && <DrinksWithRishaMenu />}
-        <footer className="footer">
-          <a href="https://zachriley.dev" target="_blank" rel="noopener noreferrer" className="footer-link">
-            Zach Riley
-          </a>
-        </footer>
       </div>
     )
   }
