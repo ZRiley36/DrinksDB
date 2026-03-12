@@ -31,15 +31,14 @@ function DrinksWithRishaMenu() {
     }
   }
 
-  const fetchDrinkDetails = async (drinkId, dbDrinkName, drinkName) => {
+  const fetchDrinkDetails = async (menuId, dbDrinkName, drinkName) => {
     const lookupName = dbDrinkName || drinkName
     if (!lookupName) return null
     try {
       console.log('🍹 Fetching drink details for menu:', lookupName)
       const data = await api.get(`/api/drinks/${encodeURIComponent(lookupName)}`)
       console.log('✅ Received drink details:', lookupName)
-      const key = drinkId || (drinkName || '').toLowerCase()
-      setDrinkDetails(prev => ({ ...prev, [key]: data }))
+      setDrinkDetails(prev => ({ ...prev, [menuId]: data }))
       return data
     } catch (err) {
       console.error('❌ Error fetching drink details:', err)
@@ -52,10 +51,9 @@ function DrinksWithRishaMenu() {
       setExpandedDrink(null)
     } else {
       setExpandedDrink(item.menu_id)
-      const detailsKey = item.menu_id
-      const hasDetails = drinkDetails[detailsKey]
+      const hasDetails = drinkDetails[item.menu_id]
       if (!hasDetails) {
-        await fetchDrinkDetails(item.drink_id, item.db_drink_name, item.drink_name)
+        await fetchDrinkDetails(item.menu_id, item.db_drink_name, item.drink_name)
       }
     }
   }
