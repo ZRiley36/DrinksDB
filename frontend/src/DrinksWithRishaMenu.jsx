@@ -63,6 +63,10 @@ function DrinksWithRishaMenu() {
       <header className="menu-header">
         <h1>Drinks with Risha</h1>
         <p className="menu-subtitle">Taste profiles & recipes from the bar</p>
+        <p className="menu-address">
+          <a href="https://www.google.com/maps/search/?api=1&query=181+Bedford+Ave,+Brooklyn,+NY+11211" target="_blank" rel="noopener noreferrer">181 Bedford Ave, Brooklyn 11211, Apt 2</a>
+          <span className="menu-see-you">— See you there at 8.</span>
+        </p>
       </header>
 
       <div className="menu-container">

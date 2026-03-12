@@ -36,6 +36,28 @@
   font-weight: 300;
 }
 
+.drinks-with-risha-menu .menu-address {
+  margin-top: 16px;
+  font-size: 1.1rem;
+  color: #e0e0e0;
+}
+
+.drinks-with-risha-menu .menu-address a {
+  color: #4ade80;
+  text-decoration: none;
+  border-bottom: 1px solid #4ade80;
+}
+
+.drinks-with-risha-menu .menu-address a:hover {
+  color: #22c55e;
+  border-bottom-color: #22c55e;
+}
+
+.drinks-with-risha-menu .menu-see-you {
+  color: #9ca3af;
+  font-style: italic;
+}
+
 .drinks-with-risha-menu .menu-container {
   background: #2d2d2d;
   border-radius: 0;

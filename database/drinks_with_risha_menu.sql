@@ -46,11 +46,12 @@ END $$;
 
 -- Insert Drinks with Risha menu items (taste blurbs + display order)
 -- db_drink_name: exact name in drinks table for JOIN; NULL means use drink_name
+-- Tone: as if saying to her at the bar; flirty, not a dossier.
 INSERT INTO drinks_with_risha_menu (drink_name, db_drink_name, description, display_order) VALUES
-('The Americano', 'Americano', 'Bitter-sweet and refreshing—Campari and vermouth with a splash of soda. Low-proof and citrusy.', 1),
-('Dirty Martini (gin)', 'Dry Martini', 'Crisp, bracing, with a savory olive brine kick. Gin-forward and dry.', 2),
-('The Bijou', 'Bijou', 'Herbal, sweet, and complex—gin, Chartreuse, and vermouth. Jewel-toned and silky.', 3),
-('The Boulevardier', 'Boulevardier', 'Bold and bitter-sweet; bourbon, Campari, and vermouth. Like a whiskey Negroni.', 4)
+('The Americano', 'Americano', 'You like Campari Spritzes—this one''s better.', 1),
+('Dirty Martini (gin)', 'Dry Martini', 'Your drink of choice, apparently. I might omit the olive juice in mine.', 2),
+('The Bijou', 'Bijou', 'I''ve never made one of these but I wanted to try, and it seemed to fit.', 3),
+('The Boulevardier', 'Boulevardier', 'No idea if you''ll like this, but you said you like negronis.', 4)
 ON CONFLICT (drink_name) DO UPDATE SET
     db_drink_name = EXCLUDED.db_drink_name,
     description = EXCLUDED.description,
